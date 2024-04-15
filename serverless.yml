@@ -6,6 +6,20 @@ provider:
   runtime: provided.al2023
   stage: dev
   region: us-east-1
+  apiName: send-wave-api-gateway
+  apiGateway:
+    apiKeySourceType: HEADER
+    apiKeys:
+      - name: freeApiKey
+        description: Free API Key for send-wave service
+        enabled: true
+    usagePlan:
+      quota:
+        limit: 1000
+        period: MONTH
+      throttle:
+        burstLimit: 20
+        rateLimit: 5
 
 plugins:
   - serverless-go-plugin
@@ -25,37 +39,6 @@ functions:
     handler: cmd/main.go
     events:
       - http:
-          path: /mail  # Update path and method as needed
+          path: /mail
           method: post
-          private: true  # Assuming your function requires authentication
-
-resources:
-  Resources:
-    ApiKey:
-      Type: 'AWS::ApiGateway::ApiKey'
-      Properties:
-        Name: 'sendWaveApiKey'
-        Description: 'API Key for send-wave service'
-        Enabled: true
-        GenerateDistinctId: true
-
-    UsagePlan:
-      Type: 'AWS::ApiGateway::UsagePlan'
-      Properties:
-        Description: 'Usage plan for send-wave service'
-        UsagePlanName: 'sendWaveUsagePlan'
-        Quota:
-          Limit: 1000
-          Period: MONTH
-        Throttle:
-          BurstLimit: 100
-          RateLimit: 10
-
-    UsagePlanKey:
-      Type: 'AWS::ApiGateway::UsagePlanKey'
-      Properties:
-        KeyId:
-          Ref: ApiKey
-        KeyType: API_KEY
-        UsagePlanId:
-          Ref: UsagePlan
+          private: true
